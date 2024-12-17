@@ -2,14 +2,31 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"os"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
 
 	aoc "github.com/MrPurpleDonut/aoc-functions"
 )
+
+func workBack(index, a int, instructions []int) int {
+	for i := range 8 {
+		v, _ := aoc.ParseAllInts(run(a*8+i, 0, 0, instructions))
+		if reflect.DeepEqual(v, instructions[index:]) {
+			if index == 0 {
+				return a*8 + i
+			}
+			val := workBack(index-1, a*8+i, instructions)
+			if val != -1 {
+				return val
+			}
+		}
+
+	}
+	return -1
+}
 
 func run(a, b, c int, instructions []int) string {
 	output := ""
@@ -29,7 +46,7 @@ func run(a, b, c int, instructions []int) string {
 			case 6:
 				operand = c
 			}
-			a = a / int(math.Pow(2, float64(operand)))
+			a = a >> operand
 		case 1:
 			b ^= operand
 		case 2:
@@ -72,7 +89,7 @@ func run(a, b, c int, instructions []int) string {
 			case 6:
 				operand = c
 			}
-			b = a / int(math.Pow(2, float64(operand)))
+			b = a >> operand
 		case 7:
 			switch operand {
 			case 0, 1, 2, 3:
@@ -83,7 +100,7 @@ func run(a, b, c int, instructions []int) string {
 			case 6:
 				operand = c
 			}
-			c = a / int(math.Pow(2, float64(operand)))
+			c = a >> operand
 		}
 	}
 	ret, _ := strings.CutSuffix(output, ",")
@@ -104,21 +121,6 @@ func main() {
 	output := run(a, b, c, instructions)
 
 	fmt.Println(output)
-
-	count, good := 38045431114282, 0
-	fmt.Println(run(count, 0, 0, instructions))
-	for {
-		val := run(count, 0, 0, instructions)
-		if val[:26] == lines[4][:26] {
-			fmt.Println(count, count-good, val)
-			good = count
-		}
-		if val == lines[4] {
-			break
-		}
-		count += 68719476736
-	}
-
-	fmt.Println(count)
+	fmt.Println(workBack(len(instructions)-1, 0, instructions))
 	fmt.Println(time.Since(start))
 }
