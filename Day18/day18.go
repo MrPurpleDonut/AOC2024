@@ -103,14 +103,15 @@ func main() {
 		}
 
 	}
-
-	count := 1500
-	for {
-		if !search(count, lines) {
-			break
+	low, high := 1024, 3450
+	for low < high {
+		mid := (high + low) / 2
+		if !search(mid, lines) {
+			high = mid - 1
+		} else {
+			low = mid + 1
 		}
-		count++
 	}
-	fmt.Println(count)
+	fmt.Println(lines[low-1])
 	fmt.Println(time.Since(start))
 }
