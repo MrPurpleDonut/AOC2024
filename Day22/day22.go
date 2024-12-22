@@ -36,13 +36,13 @@ func opperate(val, iterations int) (int, []int) {
 	res := make([]int, iterations+1)
 	res[0] = val % 10
 	for i := range iterations {
-		val ^= val * 64
+		val ^= val << 6
 		val &= mod
 
-		val ^= val / 32
+		val ^= val >> 5
 		val &= mod
 
-		val ^= (val * 2048)
+		val ^= val << 11
 		val &= mod
 		res[i+1] = val % 10
 	}
